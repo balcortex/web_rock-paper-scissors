@@ -1,56 +1,63 @@
 console.clear();
 
-const availableChoices = ['Rock', 'Paper', 'Scissors'];
+const availableChoices = ['rock', 'paper', 'scissors'];
 
-game(5);
+const playerScoreField = document.querySelector('#player-score');
+const computerScoreField = document.querySelector('#computer-score');
+const roundResultField = document.querySelector('#round-result');
+const winnerField = document.querySelector('#winner');
 
-function game(rounds) {
-    let playerWins = 0;
-    let computerWins = 0;
-    let computerChoice;
-    let playerChoice;
-    let roundResult;
+let playerScore = 0;
+let computerScore = 0;
+let roundResult = '';
 
-    for (let i = 0; i < rounds; i++) {
-        computerChoice = getComputerChoice();
-        playerChoice = prompt('Enter your choice: ');
-        roundResult = playRound(playerChoice, computerChoice);
+document.querySelector('#rock').addEventListener('click', playRound);
+document.querySelector('#paper').addEventListener('click', playRound);
+document.querySelector('#scissors').addEventListener('click', playRound);
 
-        if (roundResult == -1) computerWins++;
-        if (roundResult == 1) playerWins++;
-    }
-
-    if (playerWins > computerWins) console.log(`Player Wins. Score: ${playerWins}-${computerWins}`);
-    else if (computerWins > playerWins) console.log(`Computer Wins. Score: ${computerWins}-${playerWins}`);
-    else console.log(`It's a draw. Score: ${computerWins}-${playerWins}`);
+function disableButtons() {
+    document.querySelector('#rock').disabled = true;
+    document.querySelector('#paper').disabled = true;
+    document.querySelector('#scissors').disabled = true;
 }
 
 function getComputerChoice() {
-    choice = Math.floor(Math.random() * 3);
+    let choice = Math.floor(Math.random() * 3);
     return availableChoices[choice];
 }
 
-function playRound(playerChoice, computerChoice) {
-    let player = playerChoice.toLowerCase();
-    let compu = computerChoice.toLowerCase();
+function playRound() {
+    let playerChoice = this.id;
+    let computerChoice = getComputerChoice();
     let playerWin = 1;
 
-    if (player == compu) {
-        console.log(`It's a draw. ${playerChoice} vs ${computerChoice}`);
-        return 0;
+    if (playerChoice == computerChoice) {
+        roundResult = `It's a draw. ${playerChoice} vs ${computerChoice}`
+        roundResultField.textContent = roundResult;
+        return;
     }
 
-    if (player == 'rock' & compu == 'paper') playerWin = -1;
-    if (player == 'paper' & compu == 'scissors') playerWin = -1;
-    if (player == 'scissors' & compu == 'rock') playerWin = -1;
-
+    if (playerChoice == 'rock' & computerChoice == 'paper') playerWin = -1;
+    if (playerChoice == 'paper' & computerChoice == 'scissors') playerWin = -1;
+    if (playerChoice == 'scissors' & computerChoice == 'rock') playerWin = -1;
 
     if (playerWin == 1) {
-        console.log(`You Win! ${playerChoice} beats ${computerChoice}`);
-        return 1;
+        roundResult = `Round result: Player wins - ${playerChoice} beats ${computerChoice}`;
+        playerScoreField.textContent = `Player Score: ${++playerScore}`
+        roundResultField.textContent = roundResult;
     }
     else {
-        console.log(`You Lose! ${playerChoice} loses to ${computerChoice}`);
-        return -1;
+        roundResult = `Round result: Player loses - ${playerChoice} loses to ${computerChoice}`;
+        computerScoreField.textContent = `Computer Score: ${++computerScore}`
+        roundResultField.textContent = roundResult;
+    }
+
+    if (playerScore >= 5) {
+        winnerField.textContent = 'YOU WIN!';
+        disableButtons();
+    }
+    if (computerScore >= 5) {
+        winnerField.textContent = 'YOU LOSE!';
+        disableButtons();
     }
 }
